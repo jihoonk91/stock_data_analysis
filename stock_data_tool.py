@@ -57,6 +57,7 @@ def get_ticker_dict(companies):
 #Build a single DataFrame contains companies stock data 
 def data_crawler_whole(companies):    
     df_list=pd.DataFrame()
+    ticker_dict=get_ticker_dict(companies)
     for i in companies:
         df=data_crawler(ticker_dict[i])
         df_list=df_list.append(df)
@@ -77,10 +78,4 @@ def multiple_stock_plot(df, plot_save_location=None):
         now = datetime.now().strftime("%Y%m%d")
         fig.write_html(plot_save_location+now+'.html')
 
-companies = ['Abbott Laboratories', 'ABBVIE', 'Abercrombie', 'Abiomed', 'Accenture Plc']
-ticker_dict=get_ticker_dict(companies)
-df=data_crawler_whole(companies)
 
-plot_save_location = 'D:\\'
-
-multiple_stock_plot(df)
