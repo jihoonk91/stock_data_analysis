@@ -13,7 +13,7 @@ import pandas as pd
 import yahooquery as yq
 from datetime import datetime
 import plotly.express as px
-
+from sklearn.preprocessing import StandardScaler, MinMaxScaler
 
 #If you're using spyder, required to plot on SVG file.
 import plotly.io as pio
@@ -78,4 +78,24 @@ def multiple_stock_plot(df, plot_save_location=None):
         now = datetime.now().strftime("%Y%m%d")
         fig.write_html(plot_save_location+now+'.html')
 
+def scaler(df, scaler_selection, unscale_column, companies,ticker_dict):
+    if scaler_selection == 'standard':
+        scaler = StandardScaler()
+    elif scaler_selection =='minmax':
+        scaler = MinMaxScaler()    
+    
+    original_columns = df.columns
+    df_ticker=pd.DataFrame()
+    for i in companies:
+        df_seperate = df[df['ticker']==ticker_dict[i]]
 
+        df_unscale = df_seperate[unscale_column].reset_index(drop=True)
+        df_scale = df_seperate.loc[:, ~df_seperate.columns.isin(unscale_column)]
+    
+        df_scaled = scaler.fit_transform(df_scale)
+        df_scaled = pd.DataFrame(df_scaled, columns=df_scale.columns)
+        df_scaled = pd.concat([df_scaled, df_unscale], axis=1)
+        
+        df_ticker = df_ticker.append(df_scaled)
+    df_ticker = df_ticker[original_columns]
+    return df_ticker
